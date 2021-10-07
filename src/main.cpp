@@ -12,6 +12,7 @@ RFSwitch cSocket(&sender, "00000FF0FF0F", "00000FF0FFF0");
 RFSwitch* sockets[3] = { &aSocket, &bSocket, &cSocket };
 const int socketCount = sizeof(sockets) / sizeof(*sockets);
 
+// define const char* ssid and const char* password in this file
 #include "secrets.h"
 
 // Create server, specify the port to listen on as an argument
