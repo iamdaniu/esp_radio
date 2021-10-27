@@ -2,8 +2,11 @@
 #include <ESP8266WiFi.h>
 #include "rf_switch.h"
 #include "actions.h"
+// define const char* ssid and const char* password in this file
+#include "secrets.h"
 
 const int ON_SWITCH = D1;
+const int TRANSMIT_PIN = D3;
 
 RCSwitch sender = RCSwitch();
 RFSwitch aSocket(&sender, "000000FFFF0F", "000000FFFFF0");
@@ -11,9 +14,6 @@ RFSwitch bSocket(&sender, "00000F0FFF0F", "00000F0FFFF0");
 RFSwitch cSocket(&sender, "00000FF0FF0F", "00000FF0FFF0");
 RFSwitch* sockets[3] = { &aSocket, &bSocket, &cSocket };
 const int socketCount = sizeof(sockets) / sizeof(*sockets);
-
-// define const char* ssid and const char* password in this file
-#include "secrets.h"
 
 // Create server, specify the port to listen on as an argument
 WiFiServer server(80);
@@ -29,9 +29,10 @@ void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(ON_SWITCH, OUTPUT);
+  pinMode(TRANSMIT_PIN, OUTPUT);
 
   digitalWrite(ON_SWITCH, LOW);
-  sender.enableTransmit(D3); //Pin D3
+  sender.enableTransmit(TRANSMIT_PIN);
   sender.setProtocol(1);
   sender.setPulseLength(315);
   digitalWrite(ON_SWITCH, HIGH);
@@ -46,6 +47,7 @@ void loop() {
     return;
   }
 
+  digitalWrite(LED_BUILTIN, LOW);
   // read request
   String req = readFromWifi(client);
   if (req.length() == 0) {
@@ -65,11 +67,12 @@ void loop() {
 #if OUTPUT_SERIAL
   Serial.println("Client disonnected");
 #endif
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void connectToWifi() {
-  
-    // Connect to WiFi network
+  digitalWrite(LED_BUILTIN, LOW);
+  // Connect to WiFi network
 #if OUTPUT_SERIAL
   Serial.println();
   Serial.println();
@@ -80,7 +83,9 @@ void connectToWifi() {
   WiFi.begin(ssid, password);
   
   while (WiFi.status() != WL_CONNECTED) {
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(500);
+    digitalWrite(LED_BUILTIN, LOW);
 #if OUTPUT_SERIAL
     Serial.print(".");
 #endif
@@ -93,6 +98,8 @@ void connectToWifi() {
   
   // Start the server
   server.begin();
+
+  digitalWrite(LED_BUILTIN, HIGH);
 
 #if OUTPUT_SERIAL
   Serial.println("Server started");

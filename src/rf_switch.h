@@ -3,6 +3,8 @@
 
 #include <RCSwitch.h>
 
+#define RESEND_COUNT 10
+
 class RFSwitch {
     public:
         RFSwitch(RCSwitch *sender, const char* onMessage, const char* offMessage);

@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include"rf_switch.h"
 
-#define OUTPUT_SERIAL 0
+#define OUTPUT_SERIAL 1
 
 #ifndef __ACTIONS_H__
 #define __ACTIONS_H__
